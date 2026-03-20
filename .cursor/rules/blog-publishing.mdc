@@ -8,8 +8,9 @@ alwaysApply: false
 
 ## Source of truth
 
-- **Author in** `sources/*.md` only. Files whose names start with `_` (e.g. `_TEMPLATE.md`) are skipped by the build.
-- **Do not hand-edit** `blog/*.html` for content changes — they are generated.
+- **`sources/*.md` is the only source of truth** for post content. After any edit, run `ruby scripts/build_posts.rb` to regenerate `blog/*.html` and the homepage list.
+- **Do not hand-edit** `blog/*.html` for content — the next build would overwrite it and you would lose changes. There is no two-way sync: AI should **edit the Markdown**, then **run the build**, not “update both files” separately.
+- Files whose names start with `_` (e.g. `_TEMPLATE.md`) are skipped by the build.
 
 ## Markdown format (required)
 
