@@ -2,11 +2,16 @@
 # frozen_string_literal: true
 
 require "cgi"
+require "date"
 require "fileutils"
 
 ROOT = File.expand_path("..", __dir__)
 SOURCE_DIR = File.join(ROOT, "sources")
 BLOG_DIR = File.join(ROOT, "blog")
+INDEX_PATH = File.join(ROOT, "index.html")
+
+POST_LIST_START = "<!-- POST_LIST_START -->"
+POST_LIST_END = "<!-- POST_LIST_END -->"
 
 def html_escape(text)
   CGI.escapeHTML(text)
@@ -40,6 +45,14 @@ end
 
 def parse_date(byline)
   byline[/—\s*(.+?)\*$/, 1]&.strip || ""
+end
+
+def sort_time_for_date_string(date_str)
+  return Time.at(0) if date_str.nil? || date_str.strip.empty?
+
+  Date.parse(date_str).to_time
+rescue ArgumentError
+  Time.at(0)
 end
 
 def consume_paragraph(lines, start_index)
@@ -145,7 +158,7 @@ def render_body(lines)
   body.join("\n\n")
 end
 
-posts = Dir[File.join(SOURCE_DIR, "*.md")].sort.map do |source_path|
+def parse_source(source_path)
   raw_lines = File.readlines(source_path, chomp: true)
   title_line = raw_lines.shift
   raise "Missing title in #{source_path}" unless title_line&.start_with?("# ")
@@ -161,17 +174,28 @@ posts = Dir[File.join(SOURCE_DIR, "*.md")].sort.map do |source_path|
   body_html = render_body(raw_lines)
 
   slug = slug_for(source_path)
-  output_path = File.join(BLOG_DIR, slug)
+  {
+    title: title,
+    date: date,
+    description: description,
+    body_html: body_html,
+    slug: slug,
+    source_path: source_path
+  }
+end
+
+def write_post_html(post)
+  output_path = File.join(BLOG_DIR, post[:slug])
   html = <<~HTML
     <!DOCTYPE html>
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>#{html_escape(title)}</title>
+        <title>#{html_escape(post[:title])}</title>
         <meta
           name="description"
-          content="#{html_escape(description)}"
+          content="#{html_escape(post[:description])}"
         />
         <link rel="stylesheet" href="../site.css?v=20260319-225900" />
       </head>
@@ -181,12 +205,12 @@ posts = Dir[File.join(SOURCE_DIR, "*.md")].sort.map do |source_path|
 
           <main>
             <header class="post-header">
-              <p class="post-meta">#{html_escape(date)}</p>
-              <h1>#{html_escape(title)}</h1>
+              <p class="post-meta">#{html_escape(post[:date])}</p>
+              <h1>#{html_escape(post[:title])}</h1>
             </header>
 
             <article class="post-body">
-    #{body_html}
+    #{post[:body_html]}
             </article>
 
             <a class="back-link post-footer-link" href="../index.html">Back to home</a>
@@ -197,7 +221,45 @@ posts = Dir[File.join(SOURCE_DIR, "*.md")].sort.map do |source_path|
   HTML
 
   File.write(output_path, html)
-  { title: title, date: date, slug: slug, source_path: source_path }
 end
 
-puts "Built #{posts.length} post pages."
+def writing_list_html(posts)
+  base = "          "
+  posts.map do |post|
+    title_esc = html_escape(post[:title])
+    date_esc = html_escape(post[:date])
+    slug = post[:slug]
+    inner = <<~HTML
+      <article class="writing-item">
+        <h2><a href="blog/#{slug}">#{title_esc}</a></h2>
+        <p class="post-meta">#{date_esc}</p>
+      </article>
+    HTML
+    inner.lines.map { |line| "#{base}#{line}" }.join.chomp
+  end.join("\n\n")
+end
+
+def update_index_writing_list(posts)
+  content = File.read(INDEX_PATH)
+  unless content.include?(POST_LIST_START) && content.include?(POST_LIST_END)
+    warn "Warning: #{INDEX_PATH} missing #{POST_LIST_START} / #{POST_LIST_END}; skipping index update."
+    return
+  end
+
+  pattern = /#{Regexp.escape(POST_LIST_START)}.*?#{Regexp.escape(POST_LIST_END)}/m
+  replacement = "#{POST_LIST_START}\n#{writing_list_html(posts)}\n\n#{POST_LIST_END}"
+  File.write(INDEX_PATH, content.sub(pattern, replacement))
+end
+
+source_paths = Dir[File.join(SOURCE_DIR, "*.md")].reject do |path|
+  File.basename(path).start_with?("_")
+end
+
+posts = source_paths.map { |path| parse_source(path) }
+posts.sort_by! { |post| sort_time_for_date_string(post[:date]) }
+posts.reverse!
+
+posts.each { |post| write_post_html(post) }
+update_index_writing_list(posts)
+
+puts "Built #{posts.length} post pages and updated index writing list."

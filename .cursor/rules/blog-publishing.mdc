@@ -1,0 +1,38 @@
+---
+description: Turn Markdown notes into blog posts and publish on this static site
+globs: sources/**/*.md,scripts/build_posts.rb,index.html
+alwaysApply: false
+---
+
+# Blog publishing workflow
+
+## Source of truth
+
+- **Author in** `sources/*.md` only. Files whose names start with `_` (e.g. `_TEMPLATE.md`) are skipped by the build.
+- **Do not hand-edit** `blog/*.html` for content changes — they are generated.
+
+## Markdown format (required)
+
+1. **Line 1:** `# Title`
+2. **Line 2:** blank
+3. **Line 3:** byline exactly in this shape (date is parsed for sorting and the post header):
+
+   `*By [Nick Raushenbush](https://www.nickraushenbush.com) — Mon D, YYYY*`
+
+   Examples: `Jan 9, 2026`, `Mar 2, 2023`
+
+4. **Line 4:** blank
+5. **Body:** normal Markdown — `##` / `###`, paragraphs, `-` / `*` lists, `1.` lists, `> ` blockquotes, `---` separators, `**bold**`, `*italic*`, `[text](url)`.
+
+## New post from rough notes
+
+When the user pastes notes or asks to add a post:
+
+1. Choose a **URL slug** (lowercase, hyphens): e.g. `my-topic-here` → file `sources/my-topic-here.md`.
+2. Normalize their text into the **required layout** above; set title and date.
+3. Run **`ruby scripts/build_posts.rb`** from the repo root (regenerates `blog/<slug>.html` and updates the **Thoughts** list in `index.html` between `<!-- POST_LIST_START -->` and `<!-- POST_LIST_END -->`).
+4. Tell them to **commit and push** to deploy GitHub Pages (`git add -A && git commit -m "Add post: …" && git push`).
+
+## Supported Markdown (build script)
+
+The Ruby builder handles a focused subset (not full CommonMark). Prefer: headings `##`/`###`, paragraphs, lists, blockquotes, horizontal rules `---`, inline bold/italic/links. Avoid exotic syntax unless extending `scripts/build_posts.rb`.
