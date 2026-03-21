@@ -197,7 +197,7 @@ def write_post_html(post)
           name="description"
           content="#{html_escape(post[:description])}"
         />
-        <link rel="stylesheet" href="../site.css?v=20260319-225900" />
+        <link rel="stylesheet" href="../site.css?v=20260320-fullbg" />
       </head>
       <body>
         <div class="page-shell post-page">
