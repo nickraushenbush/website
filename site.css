@@ -88,7 +88,7 @@ h3 {
 
 .intro-copy p {
   font-size: clamp(1.05rem, 2vw, 1.12rem);
-  line-height: 1.18;
+  line-height: 1.36;
 }
 
 .intro-copy strong {
@@ -121,14 +121,15 @@ h3 {
 }
 
 .writing-item h2 {
-  font-size: clamp(0.98rem, 1.1vw, 1.04rem);
+  font-size: clamp(1.05rem, 2vw, 1.12rem);
   font-weight: 400;
-  line-height: 1.15;
-  color: #6f6f6f;
+  line-height: 1.36;
+  letter-spacing: normal;
+  color: var(--muted);
 }
 
 .writing-item .post-meta {
-  margin-top: calc(0.943rem * 1.15);
+  margin-top: 0.5rem;
 }
 
 .writing-item a:hover,
@@ -286,7 +287,7 @@ h3 {
   }
 
   .intro-copy p {
-    line-height: 1.24;
+    line-height: 1.43;
   }
 
   .writing-list {
@@ -298,11 +299,12 @@ h3 {
   }
 
   .writing-item h2 {
-    font-size: 0.98rem;
+    font-size: clamp(1.05rem, 2vw, 1.12rem);
+    line-height: 1.43;
   }
 
   .writing-item .post-meta {
-    margin-top: calc(0.578rem * 1.15);
+    margin-top: 0.3rem;
   }
 
   .writing-item h2,
