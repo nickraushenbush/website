@@ -1,3 +1,1 @@
-# nickraushenbush.com
-
-Personal site and blog.
+personal website and blog
