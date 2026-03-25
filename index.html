@@ -8,10 +8,30 @@
       name="description"
       content="Nick Raushenbush is a writer and builder sharing notes on work, systems, and the internet."
     />
-    <link rel="stylesheet" href="site.css?v=20260324-spacingfix" />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          var prefersDark =
+            window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+          var theme =
+            stored === "light" || stored === "dark" ? stored : prefersDark ? "dark" : "light";
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {}
+      })();
+    </script>
+    <link rel="stylesheet" href="site.css?v=20260326-darkmode-toggle-switch" />
   </head>
   <body>
     <div class="page-shell">
+      <button
+        id="theme-toggle"
+        class="theme-toggle"
+        type="button"
+        role="switch"
+        aria-label="Switch to dark mode"
+        aria-checked="false"
+      ></button>
       <main id="top" class="home-layout">
         <section class="intro-block">
           <h1 class="site-name">Nick Raushenbush</h1>
@@ -22,7 +42,7 @@
             </p>
             <p>
               I have a small fund that invests in <strong><a class="nowrap-link" href="https://www.ycombinator.com/" target="_blank" rel="noopener noreferrer">Y Combinator</a></strong>
-              companies, and I advise startups at <strong><a href="https://halcyonfutures.org/" target="_blank" rel="noopener noreferrer">Halcyon</a></strong>.
+              companies, and I advise startups as an operating partner at <strong><a href="https://halcyonfutures.org/" target="_blank" rel="noopener noreferrer">Halcyon</a></strong>.
             </p>
           </div>
         </section>
@@ -66,5 +86,38 @@
         </section>
       </main>
     </div>
+    <script>
+      (function () {
+        var btn = document.getElementById("theme-toggle");
+        if (!btn) return;
+
+        function getTheme() {
+          return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+        }
+
+        function applyTheme(theme, persist) {
+          document.documentElement.dataset.theme = theme;
+          if (persist) {
+            try {
+              localStorage.setItem("theme", theme);
+            } catch (e) {}
+          }
+
+          var isDark = theme === "dark";
+          btn.setAttribute("aria-checked", isDark ? "true" : "false");
+          btn.setAttribute(
+            "aria-label",
+            isDark ? "Switch to light mode" : "Switch to dark mode"
+          );
+        }
+
+        applyTheme(getTheme(), false);
+
+        btn.addEventListener("click", function () {
+          var next = getTheme() === "dark" ? "light" : "dark";
+          applyTheme(next, true);
+        });
+      })();
+    </script>
   </body>
 </html>

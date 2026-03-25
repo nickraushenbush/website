@@ -8,10 +8,65 @@
       name="description"
       content="Before Shopify&#39;s platform went supernova, my cofounder Finbarr and I grew Shogun (W18) to eight figure ARR by filling gaps in their product, and leaning into their ecosystem. As interest in Shopify soared in the public markets during COVID, so did interest in Shogun. We ended up raising over $100M in venture capital in less than 12 months."
     />
-    <link rel="stylesheet" href="../site.css?v=20260320-fullbg" />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          var prefersDark =
+            window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+          var theme =
+            stored === "light" || stored === "dark" ? stored : prefersDark ? "dark" : "light";
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {}
+      })();
+    </script>
+    <link rel="stylesheet" href="../site.css?v=20260326-darkmode-toggle-switch" />
   </head>
   <body>
     <div class="page-shell post-page">
+      <button
+        id="theme-toggle"
+        class="theme-toggle"
+        type="button"
+        aria-label="Switch to dark mode"
+        role="switch"
+        aria-checked="false"
+      ></button>
+
+      <script>
+        (function () {
+          var btn = document.getElementById("theme-toggle");
+          if (!btn) return;
+
+          function getTheme() {
+            return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+          }
+
+          function applyTheme(theme, persist) {
+            document.documentElement.dataset.theme = theme;
+            if (persist) {
+              try {
+                localStorage.setItem("theme", theme);
+              } catch (e) {}
+            }
+
+            var isDark = theme === "dark";
+            btn.setAttribute("aria-checked", isDark ? "true" : "false");
+            btn.setAttribute(
+              "aria-label",
+              isDark ? "Switch to light mode" : "Switch to dark mode"
+            );
+          }
+
+          applyTheme(getTheme(), false);
+
+          btn.addEventListener("click", function () {
+            var next = getTheme() === "dark" ? "light" : "dark";
+            applyTheme(next, true);
+          });
+        })();
+      </script>
+
       <a class="back-link" href="../index.html">Back to home</a>
 
       <main>
