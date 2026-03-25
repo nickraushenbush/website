@@ -6,6 +6,8 @@ require "date"
 require "fileutils"
 
 ROOT = File.expand_path("..", __dir__)
+SITE_ORIGIN = "https://www.nickraushenbush.com"
+OG_IMAGE_URL = "#{SITE_ORIGIN}/og-image.png?v=20260326-site"
 SOURCE_DIR = File.join(ROOT, "sources")
 BLOG_DIR = File.join(ROOT, "blog")
 INDEX_PATH = File.join(ROOT, "index.html")
@@ -197,6 +199,24 @@ def write_post_html(post)
           name="description"
           content="#{html_escape(post[:description])}"
         />
+        <meta property="og:type" content="article" />
+        <meta property="og:site_name" content="Nick Raushenbush" />
+        <meta property="og:title" content="#{html_escape(post[:title])}" />
+        <meta
+          property="og:description"
+          content="#{html_escape(post[:description])}"
+        />
+        <meta property="og:url" content="#{SITE_ORIGIN}/blog/#{html_escape(post[:slug])}" />
+        <meta property="og:image" content="#{OG_IMAGE_URL}" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="#{html_escape(post[:title])}" />
+        <meta
+          name="twitter:description"
+          content="#{html_escape(post[:description])}"
+        />
+        <meta name="twitter:image" content="#{OG_IMAGE_URL}" />
         <script>
           (function () {
             try {
@@ -209,6 +229,7 @@ def write_post_html(post)
             } catch (e) {}
           })();
         </script>
+        <link rel="icon" href="../favicon.svg?v=20260326-n2" type="image/svg+xml" />
         <link rel="stylesheet" href="../site.css?v=20260326-darkmode-toggle-switch" />
       </head>
       <body>
