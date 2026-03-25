@@ -7,7 +7,7 @@ require "fileutils"
 
 ROOT = File.expand_path("..", __dir__)
 SITE_ORIGIN = "https://www.nickraushenbush.com"
-OG_IMAGE_URL = "#{SITE_ORIGIN}/og-image.png?v=20260326-site"
+OG_IMAGE_URL = "#{SITE_ORIGIN}/og-image.png?v=20260326-og-clean"
 SOURCE_DIR = File.join(ROOT, "sources")
 BLOG_DIR = File.join(ROOT, "blog")
 INDEX_PATH = File.join(ROOT, "index.html")

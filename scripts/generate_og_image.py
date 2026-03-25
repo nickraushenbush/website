@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Regenerate the default Open Graph image (1200x630).
-# Matches site.css light theme: --bg #fff, --text #141414, --muted #7a7a7a, --line feel.
-# Layout inspired by large stacked name + footer strip (see site --sans stack).
+# Matches site.css light theme: --bg #fff, --text #141414.
+# Name only — platforms already show title and domain in the link preview.
 # Requires: pip install pillow
 # Run from repo root: python3 scripts/generate_og_image.py
 
@@ -10,7 +10,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageChops, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
 INTER_PATH = ROOT / "assets" / "fonts" / "InterVariable.ttf"
@@ -19,20 +19,12 @@ OUTPUT = ROOT / "og-image.png"
 # Mirrors :root in site.css (light theme)
 BG = (255, 255, 255)  # --bg
 TEXT = (20, 20, 20)  # --text #141414
-MUTED = (122, 122, 122)  # --muted #7a7a7a
-# ~ rgba(20,20,20,0.08) on white
-FOOTER_BG = (236, 236, 236)
 
 WIDTH, HEIGHT = 1200, 630
 CORNER_R = 28
-FOOTER_H = 96
-PAD_X = 80
-PAD_TOP = 72
 
 LINE1 = "Nick"
 LINE2 = "Raushenbush"
-FOOTER_NAME = "Nick Raushenbush"
-FOOTER_URL = "nickraushenbush.com"
 
 
 def _try_truetype(path: str, size: int, index: int = 0) -> ImageFont.FreeTypeFont | None:
@@ -75,7 +67,6 @@ def text_size(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.ImageFont) -
 
 
 def main() -> None:
-    # Rounded “card” on transparent (previews that use a gray canvas show the corners).
     card_mask = Image.new("L", (WIDTH, HEIGHT), 0)
     ImageDraw.Draw(card_mask).rounded_rectangle(
         (0, 0, WIDTH - 1, HEIGHT - 1), radius=CORNER_R, fill=255
@@ -85,41 +76,22 @@ def main() -> None:
     white = Image.new("RGBA", (WIDTH, HEIGHT), (*BG, 255))
     img.paste(white, (0, 0), card_mask)
 
-    footer_band = Image.new("L", (WIDTH, HEIGHT), 0)
-    ImageDraw.Draw(footer_band).rectangle((0, HEIGHT - FOOTER_H, WIDTH, HEIGHT), fill=255)
-    footer_mask = ImageChops.multiply(card_mask, footer_band)
-    grey = Image.new("RGBA", (WIDTH, HEIGHT), (*FOOTER_BG, 255))
-    img.paste(grey, (0, 0), footer_mask)
-
     draw = ImageDraw.Draw(img)
 
-    # Large stacked name (sans, site-like), vertically centered in area above footer
-    cream_bottom = HEIGHT - FOOTER_H
-    headline = load_sans(118, bold=True)
-    # Slightly smaller second line if needed for balance
-    line1_font = headline
+    line1_font = load_sans(118, bold=True)
     line2_font = load_sans(118, bold=True)
 
     w1, h1 = text_size(draw, LINE1, line1_font)
     w2, h2 = text_size(draw, LINE2, line2_font)
     gap = 8.0
     block_h = h1 + gap + h2
-    y0 = (cream_bottom - PAD_TOP - block_h) / 2
-    if y0 < PAD_TOP:
-        y0 = float(PAD_TOP)
+    max_w = max(w1, w2)
+    x0 = (WIDTH - max_w) / 2
+    y0 = (HEIGHT - block_h) / 2
 
-    draw.text((PAD_X, y0), LINE1, font=line1_font, fill=TEXT)
-    draw.text((PAD_X, y0 + h1 + gap), LINE2, font=line2_font, fill=TEXT)
+    draw.text((x0, y0), LINE1, font=line1_font, fill=TEXT)
+    draw.text((x0, y0 + h1 + gap), LINE2, font=line2_font, fill=TEXT)
 
-    # Footer: name (semibold-ish) + URL (muted)
-    foot_name_font = load_sans(22, bold=True)
-    foot_url_font = load_sans(20, bold=False)
-    fy = float(HEIGHT - FOOTER_H + 22)
-    draw.text((PAD_X, fy), FOOTER_NAME, font=foot_name_font, fill=TEXT)
-    _, nh = text_size(draw, FOOTER_NAME, foot_name_font)
-    draw.text((PAD_X, fy + nh + 6), FOOTER_URL, font=foot_url_font, fill=MUTED)
-
-    # Flatten to RGB on white for maximum crawler compatibility
     flat = Image.new("RGB", (WIDTH, HEIGHT), BG)
     flat.paste(img, (0, 0), img.split()[3])
     flat.save(OUTPUT, "PNG", optimize=True)
