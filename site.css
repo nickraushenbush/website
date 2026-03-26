@@ -329,7 +329,22 @@ h3 {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .intro-block,
+  .writing-list,
+  .post-page {
+    animation: none;
+  }
+}
+
 @media (max-width: 640px) {
+  /* Skip entry animations on small viewports (faster first paint on mobile). */
+  .intro-block,
+  .writing-list,
+  .post-page {
+    animation: none;
+  }
+
   .page-shell {
     width: min(100%, calc(100% - 1rem));
     padding: 3rem 0;
