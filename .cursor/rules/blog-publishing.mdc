@@ -40,4 +40,4 @@ The Ruby builder handles a focused subset (not full CommonMark). Prefer: heading
 
 ## CSS
 
-- Pages load **`site.min.css`** (minified). Edit **`site.css`**, then run **`ruby scripts/minify_css.rb`** (requires Node) to regenerate `site.min.css`. Bump the `?v=` on stylesheet links in `index.html` and `scripts/build_posts.rb` when you want to bust caches. See **`PERFORMANCE.md`** at the repo root.
+- Pages load **`site.min.css`** (minified). Edit **`site.css`**, then run **`npm install`** once if needed and **`ruby scripts/minify_css.rb`** to regenerate `site.min.css`. Bump the `?v=` on stylesheet links in `index.html` and `scripts/build_posts.rb` when you want to bust caches. See **`PERFORMANCE.md`** at the repo root.

@@ -52,7 +52,7 @@ Common YC interview experience: "I thought the interview went poorly, but we got
 
 The YC partners are highly intelligent and accomplished folks, but you are the expert on the specific problem you're working to solve with your startup. Regardless of outcome, the YC interview is yet one more thing you'll do on your long startup journey — nothing more, nothing less. Don't lose sleep spending a bunch of time "preparing" because this interview is just about relaying facts on your favorite topic: your startup.
 
-> 💡 If this high level guidance isn't what you had in mind, or you're eager to practice concise responses; check out this tool from [James Cunningham](http://jamescun.com/) and Colin Hayhurst for [StackBlaze](http://stackblaze.com/)'s YC S12 Interview: [https://jamescun.github.io/iPG/](https://jamescun.github.io/iPG/)
+> 💡 If this high level guidance isn't what you had in mind, or you're eager to practice concise responses; check out this tool from [James Cunningham](https://jamescun.com/) and Colin Hayhurst for [StackBlaze](https://stackblaze.com/)'s YC S12 Interview: [https://jamescun.github.io/iPG/](https://jamescun.github.io/iPG/)
 
 ---
 

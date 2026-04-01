@@ -34,6 +34,13 @@ html {
   background: var(--bg);
 }
 
+/* Markdown links rejected by build (unsafe scheme): still readable, not clickable */
+.inline-link-unsupported {
+  color: var(--muted);
+  text-decoration: underline dotted;
+  cursor: default;
+}
+
 body {
   margin: 0;
   color: var(--text);
@@ -233,8 +240,21 @@ h3 {
 
 .post-header h1 {
   margin-top: 0.4rem;
-  max-width: 12ch;
   font-size: clamp(2.1rem, 5vw, 3.5rem);
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Narrow viewports: allow the first segment to wrap at word boundaries. */
+.post-title-line {
+  white-space: normal;
+}
+
+/* When there is room, keep the first segment on one line (see sources title ` || ` split). */
+@media (min-width: 641px) {
+  .post-title-line {
+    white-space: nowrap;
+  }
 }
 
 .post-body {
@@ -385,8 +405,7 @@ h3 {
     margin-top: 0.3rem;
   }
 
-  .writing-item h2,
-  .post-header h1 {
+  .writing-item h2 {
     max-width: none;
   }
 

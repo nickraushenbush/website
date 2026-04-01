@@ -8,10 +8,11 @@ This site is static HTML + one stylesheet, with no runtime JS bundles or web fon
 - **Served:** [`site.min.css`](site.min.css) — minified output linked from pages. Regenerate after any `site.css` change:
 
   ```bash
+  npm install
   ruby scripts/minify_css.rb
   ```
 
-  (Requires Node.js for `npx` + `clean-css-cli`.)
+  (Requires Node.js; `clean-css-cli` is installed from [`package.json`](package.json) into `node_modules/`.)
 
 ## When to split “critical” CSS
 
@@ -26,7 +27,7 @@ Until then, one minified file is the right tradeoff.
 
 ## Mobile
 
-- Blog post HTML defers the theme-toggle script to the **end of `<body>`** so `<main>` parses earlier.
+- Blog post HTML loads **`theme-init.js`** in `<head>` (avoids theme flash) and **`theme-toggle.js`** at the **end of `<body>`** so `<main>` parses earlier.
 - Entry animations are disabled for **viewports ≤640px** and for **`prefers-reduced-motion: reduce`**.
 
 ## Measuring

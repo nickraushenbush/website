@@ -8,6 +8,12 @@ require "fileutils"
 ROOT = File.expand_path("..", __dir__)
 SITE_ORIGIN = "https://www.nickraushenbush.com"
 OG_IMAGE_URL = "#{SITE_ORIGIN}/og-image.png?v=20260326-og-clean"
+# Bump when theme scripts change (cache bust).
+THEME_ASSET_VERSION = "20260331-security"
+SITE_CSS_QUERY = "20260331-security"
+CONTENT_SECURITY_POLICY = "default-src 'self'; script-src 'self'; style-src 'self'; " \
+  "img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; " \
+  "base-uri 'self'; upgrade-insecure-requests"
 SOURCE_DIR = File.join(ROOT, "sources")
 BLOG_DIR = File.join(ROOT, "blog")
 INDEX_PATH = File.join(ROOT, "index.html")
@@ -19,17 +25,38 @@ def html_escape(text)
   CGI.escapeHTML(text)
 end
 
+MAX_LINK_HREF_LENGTH = 2048
+
+# Only allow http(s), mailto:, or same-site relative paths (no javascript:/data:/etc.).
+def link_href_attributes(href)
+  h = href.strip
+  return [nil, false] if h.empty? || h.length > MAX_LINK_HREF_LENGTH
+  return [nil, false] if h.start_with?("//")
+
+  esc = CGI.escapeHTML(href)
+  if h.match?(%r{\Ahttps?://}i)
+    return [%( href="#{esc}" target="_blank" rel="noopener noreferrer"), true]
+  end
+  if h.match?(%r{\Amailto:}i)
+    return [%( href="#{esc}"), true]
+  end
+  return [nil, false] if h.include?(":")
+  return [nil, false] unless h.match?(%r{\A[A-Za-z0-9_./#?=&%+\-]+\z})
+
+  [%( href="#{esc}"), true]
+end
+
 def inline(text)
   escaped = html_escape(text)
   escaped.gsub!(%r{\[([^\]]+)\]\(([^)]+)\)}) do
     label = Regexp.last_match(1)
     href = Regexp.last_match(2)
-    attrs = if href.match?(%r{\Ahttps?://})
-      %( href="#{CGI.escapeHTML(href)}" target="_blank" rel="noopener noreferrer")
+    attrs, ok = link_href_attributes(href)
+    if ok
+      %(<a#{attrs}>#{inline(label)}</a>)
     else
-      %( href="#{CGI.escapeHTML(href)}")
+      %(<span class="inline-link-unsupported">#{inline(label)}</span>)
     end
-    %(<a#{attrs}>#{inline(label)}</a>)
   end
   escaped.gsub!(/\*\*\*(.+?)\*\*\*/) { "<strong><em>#{$1}</em></strong>" }
   escaped.gsub!(/\*\*(.+?)\*\*/) { "<strong>#{$1}</strong>" }
@@ -47,6 +74,23 @@ end
 
 def parse_date(byline)
   byline[/—\s*(.+?)\*$/, 1]&.strip || ""
+end
+
+# Optional split in the # title line: use " || " between two segments. The
+# first segment is wrapped in .post-title-line (nowrap) so it stays on one line;
+# meta tags and the homepage list use the segments joined with a single space.
+TITLE_HEADING_SPLIT = /\s\|\|\s/
+
+def parse_title_from_heading(title_line)
+  raw = title_line.sub(/^#\s+/, "").strip
+  if raw.match?(TITLE_HEADING_SPLIT)
+    first, second = raw.split(TITLE_HEADING_SPLIT, 2).map(&:strip)
+    title = "#{first} #{second}"
+    title_h1_html = %(<span class="post-title-line">#{html_escape(first)}</span> #{html_escape(second)})
+    [title, title_h1_html]
+  else
+    [raw, html_escape(raw)]
+  end
 end
 
 def sort_time_for_date_string(date_str)
@@ -165,7 +209,7 @@ def parse_source(source_path)
   title_line = raw_lines.shift
   raise "Missing title in #{source_path}" unless title_line&.start_with?("# ")
 
-  title = title_line.sub(/^#\s+/, "").strip
+  title, title_h1_html = parse_title_from_heading(title_line)
   raw_lines.shift while raw_lines.first&.strip == ""
   byline = raw_lines.shift.to_s.strip
   date = parse_date(byline)
@@ -178,6 +222,7 @@ def parse_source(source_path)
   slug = slug_for(source_path)
   {
     title: title,
+    title_h1_html: title_h1_html,
     date: date,
     description: description,
     body_html: body_html,
@@ -217,20 +262,10 @@ def write_post_html(post)
           content="#{html_escape(post[:description])}"
         />
         <meta name="twitter:image" content="#{OG_IMAGE_URL}" />
-        <script>
-          (function () {
-            try {
-              var stored = localStorage.getItem("theme");
-              var prefersDark =
-                window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-              var theme =
-                stored === "light" || stored === "dark" ? stored : prefersDark ? "dark" : "light";
-              document.documentElement.dataset.theme = theme;
-            } catch (e) {}
-          })();
-        </script>
+        <meta http-equiv="Content-Security-Policy" content="#{CONTENT_SECURITY_POLICY}" />
+        <script src="../theme-init.js?v=#{THEME_ASSET_VERSION}"></script>
         <link rel="icon" href="../favicon.svg?v=20260326-n2" type="image/svg+xml" />
-        <link rel="stylesheet" href="../site.min.css?v=20260326-perf" />
+        <link rel="stylesheet" href="../site.min.css?v=#{SITE_CSS_QUERY}" />
       </head>
       <body>
         <div class="page-shell post-page">
@@ -248,7 +283,7 @@ def write_post_html(post)
           <main>
             <header class="post-header">
               <p class="post-meta">#{html_escape(post[:date])}</p>
-              <h1>#{html_escape(post[:title])}</h1>
+              <h1>#{post[:title_h1_html]}</h1>
             </header>
 
             <article class="post-body">
@@ -258,39 +293,7 @@ def write_post_html(post)
             <a class="back-link post-footer-link" href="../index.html">Back to home</a>
           </main>
         </div>
-        <script>
-          (function () {
-            var btn = document.getElementById("theme-toggle");
-            if (!btn) return;
-
-            function getTheme() {
-              return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
-            }
-
-            function applyTheme(theme, persist) {
-              document.documentElement.dataset.theme = theme;
-              if (persist) {
-                try {
-                  localStorage.setItem("theme", theme);
-                } catch (e) {}
-              }
-
-              var isDark = theme === "dark";
-              btn.setAttribute("aria-checked", isDark ? "true" : "false");
-              btn.setAttribute(
-                "aria-label",
-                isDark ? "Switch to light mode" : "Switch to dark mode"
-              );
-            }
-
-            applyTheme(getTheme(), false);
-
-            btn.addEventListener("click", function () {
-              var next = getTheme() === "dark" ? "light" : "dark";
-              applyTheme(next, true);
-            });
-          })();
-        </script>
+        <script src="../theme-toggle.js?v=#{THEME_ASSET_VERSION}"></script>
       </body>
     </html>
   HTML

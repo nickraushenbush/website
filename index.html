@@ -32,20 +32,13 @@
       name="twitter:image"
       content="https://www.nickraushenbush.com/og-image.png?v=20260326-og-clean"
     />
-    <script>
-      (function () {
-        try {
-          var stored = localStorage.getItem("theme");
-          var prefersDark =
-            window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-          var theme =
-            stored === "light" || stored === "dark" ? stored : prefersDark ? "dark" : "light";
-          document.documentElement.dataset.theme = theme;
-        } catch (e) {}
-      })();
-    </script>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; upgrade-insecure-requests"
+    />
+    <script src="theme-init.js?v=20260331-security"></script>
     <link rel="icon" href="favicon.svg?v=20260326-n2" type="image/svg+xml" />
-    <link rel="stylesheet" href="site.min.css?v=20260326-perf" />
+    <link rel="stylesheet" href="site.min.css?v=20260331-security" />
   </head>
   <body>
     <div class="page-shell">
@@ -76,6 +69,11 @@
           <h2 class="writing-heading">Thoughts</h2>
 
           <!-- POST_LIST_START -->
+          <article class="writing-item">
+            <h2><a href="blog/the-yc-batch-is-over-now-what.html">The YC batch is over. Now what?</a></h2>
+            <p class="post-meta">Mar 30, 2026</p>
+          </article>
+
           <article class="writing-item">
             <h2><a href="blog/ceo-cliff-notes.html">CEO Cliff Notes</a></h2>
             <p class="post-meta">Feb 6, 2026</p>
@@ -111,38 +109,6 @@
         </section>
       </main>
     </div>
-    <script>
-      (function () {
-        var btn = document.getElementById("theme-toggle");
-        if (!btn) return;
-
-        function getTheme() {
-          return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
-        }
-
-        function applyTheme(theme, persist) {
-          document.documentElement.dataset.theme = theme;
-          if (persist) {
-            try {
-              localStorage.setItem("theme", theme);
-            } catch (e) {}
-          }
-
-          var isDark = theme === "dark";
-          btn.setAttribute("aria-checked", isDark ? "true" : "false");
-          btn.setAttribute(
-            "aria-label",
-            isDark ? "Switch to light mode" : "Switch to dark mode"
-          );
-        }
-
-        applyTheme(getTheme(), false);
-
-        btn.addEventListener("click", function () {
-          var next = getTheme() === "dark" ? "light" : "dark";
-          applyTheme(next, true);
-        });
-      })();
-    </script>
+    <script src="theme-toggle.js?v=20260331-security"></script>
   </body>
 </html>

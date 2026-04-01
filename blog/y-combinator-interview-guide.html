@@ -26,20 +26,10 @@
       content="As a YC alum, I get a decent amount of questions about the interview process, and often conduct mock interviews for folks in my network. A lot of the YC interview advice I give is redundant, so this is me &quot;open sourcing&quot; it for everyone."
     />
     <meta name="twitter:image" content="https://www.nickraushenbush.com/og-image.png?v=20260326-og-clean" />
-    <script>
-      (function () {
-        try {
-          var stored = localStorage.getItem("theme");
-          var prefersDark =
-            window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-          var theme =
-            stored === "light" || stored === "dark" ? stored : prefersDark ? "dark" : "light";
-          document.documentElement.dataset.theme = theme;
-        } catch (e) {}
-      })();
-    </script>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; upgrade-insecure-requests" />
+    <script src="../theme-init.js?v=20260331-security"></script>
     <link rel="icon" href="../favicon.svg?v=20260326-n2" type="image/svg+xml" />
-    <link rel="stylesheet" href="../site.min.css?v=20260326-perf" />
+    <link rel="stylesheet" href="../site.min.css?v=20260331-security" />
   </head>
   <body>
     <div class="page-shell post-page">
@@ -112,7 +102,7 @@
           <p>The YC partners are highly intelligent and accomplished folks, but you are the expert on the specific problem you&#39;re working to solve with your startup. Regardless of outcome, the YC interview is yet one more thing you&#39;ll do on your long startup journey — nothing more, nothing less. Don&#39;t lose sleep spending a bunch of time &quot;preparing&quot; because this interview is just about relaying facts on your favorite topic: your startup.</p>
 
           <blockquote>
-            💡 If this high level guidance isn&#39;t what you had in mind, or you&#39;re eager to practice concise responses; check out this tool from <a href="http://jamescun.com/" target="_blank" rel="noopener noreferrer">James Cunningham</a> and Colin Hayhurst for <a href="http://stackblaze.com/" target="_blank" rel="noopener noreferrer">StackBlaze</a>&#39;s YC S12 Interview: <a href="https://jamescun.github.io/iPG/" target="_blank" rel="noopener noreferrer">https://jamescun.github.io/iPG/</a>
+            💡 If this high level guidance isn&#39;t what you had in mind, or you&#39;re eager to practice concise responses; check out this tool from <a href="https://jamescun.com/" target="_blank" rel="noopener noreferrer">James Cunningham</a> and Colin Hayhurst for <a href="https://stackblaze.com/" target="_blank" rel="noopener noreferrer">StackBlaze</a>&#39;s YC S12 Interview: <a href="https://jamescun.github.io/iPG/" target="_blank" rel="noopener noreferrer">https://jamescun.github.io/iPG/</a>
           </blockquote>
 
           <h2>A final word</h2>
@@ -129,38 +119,6 @@
         <a class="back-link post-footer-link" href="../index.html">Back to home</a>
       </main>
     </div>
-    <script>
-      (function () {
-        var btn = document.getElementById("theme-toggle");
-        if (!btn) return;
-
-        function getTheme() {
-          return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
-        }
-
-        function applyTheme(theme, persist) {
-          document.documentElement.dataset.theme = theme;
-          if (persist) {
-            try {
-              localStorage.setItem("theme", theme);
-            } catch (e) {}
-          }
-
-          var isDark = theme === "dark";
-          btn.setAttribute("aria-checked", isDark ? "true" : "false");
-          btn.setAttribute(
-            "aria-label",
-            isDark ? "Switch to light mode" : "Switch to dark mode"
-          );
-        }
-
-        applyTheme(getTheme(), false);
-
-        btn.addEventListener("click", function () {
-          var next = getTheme() === "dark" ? "light" : "dark";
-          applyTheme(next, true);
-        });
-      })();
-    </script>
+    <script src="../theme-toggle.js?v=20260331-security"></script>
   </body>
 </html>
