@@ -27,7 +27,7 @@ Until then, one minified file is the right tradeoff.
 
 ## Mobile
 
-- Blog post HTML loads **`theme-init.js`** in `<head>` (avoids theme flash) and **`theme-toggle.js`** at the **end of `<body>`** so `<main>` parses earlier.
+- Blog post HTML loads **`js/theme-init.js`** in `<head>` (avoids theme flash) and **`js/theme-toggle.js`** at the **end of `<body>`** so `<main>` parses earlier.
 - Entry animations are disabled for **viewports ≤640px** and for **`prefers-reduced-motion: reduce`**.
 
 ## Measuring

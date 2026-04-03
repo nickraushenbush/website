@@ -1,6 +1,6 @@
 ---
 description: Turn Markdown notes into blog posts and publish on this static site
-globs: sources/**/*.md,scripts/build_posts.rb,index.html,site.css
+globs: sources/**/*.md,scripts/build_posts.rb,index.html,site.css,js/*.js,assets/*
 alwaysApply: false
 ---
 
@@ -40,4 +40,4 @@ The Ruby builder handles a focused subset (not full CommonMark). Prefer: heading
 
 ## CSS
 
-- Pages load **`site.min.css`** (minified). Edit **`site.css`**, then run **`npm install`** once if needed and **`ruby scripts/minify_css.rb`** to regenerate `site.min.css`. Bump the `?v=` on stylesheet links in `index.html` and `scripts/build_posts.rb` when you want to bust caches. See **`PERFORMANCE.md`** at the repo root.
+- Pages load **`site.min.css`** (minified). Edit **`site.css`**, then run **`npm install`** once if needed and **`ruby scripts/minify_css.rb`** to regenerate `site.min.css`. Bump the `?v=` on stylesheet links in `index.html` and `scripts/build_posts.rb` when you want to bust caches. Theme scripts live under **`js/`**; favicon and default OG image under **`assets/`** (see **`README.md`**). See **`PERFORMANCE.md`** at the repo root.

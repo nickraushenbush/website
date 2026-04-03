@@ -14,7 +14,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
 INTER_PATH = ROOT / "assets" / "fonts" / "InterVariable.ttf"
-OUTPUT = ROOT / "og-image.png"
+OUTPUT = ROOT / "assets" / "og-image.png"
 
 # Mirrors :root in site.css (light theme)
 BG = (255, 255, 255)  # --bg

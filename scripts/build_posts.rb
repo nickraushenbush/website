@@ -7,9 +7,10 @@ require "fileutils"
 
 ROOT = File.expand_path("..", __dir__)
 SITE_ORIGIN = "https://www.nickraushenbush.com"
-OG_IMAGE_URL = "#{SITE_ORIGIN}/og-image.png?v=20260326-og-clean"
+OG_IMAGE_URL = "#{SITE_ORIGIN}/assets/og-image.png?v=20260402-assets"
 # Bump when theme scripts change (cache bust).
-THEME_ASSET_VERSION = "20260331-security"
+THEME_ASSET_VERSION = "20260402-assets"
+FAVICON_QUERY = "20260402-assets"
 SITE_CSS_QUERY = "20260331-security"
 CONTENT_SECURITY_POLICY = "default-src 'self'; script-src 'self'; style-src 'self'; " \
   "img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; " \
@@ -263,8 +264,8 @@ def write_post_html(post)
         />
         <meta name="twitter:image" content="#{OG_IMAGE_URL}" />
         <meta http-equiv="Content-Security-Policy" content="#{CONTENT_SECURITY_POLICY}" />
-        <script src="../theme-init.js?v=#{THEME_ASSET_VERSION}"></script>
-        <link rel="icon" href="../favicon.svg?v=20260326-n2" type="image/svg+xml" />
+        <script src="../js/theme-init.js?v=#{THEME_ASSET_VERSION}"></script>
+        <link rel="icon" href="../assets/favicon.svg?v=#{FAVICON_QUERY}" type="image/svg+xml" />
         <link rel="stylesheet" href="../site.min.css?v=#{SITE_CSS_QUERY}" />
       </head>
       <body>
@@ -293,7 +294,7 @@ def write_post_html(post)
             <a class="back-link post-footer-link" href="../index.html">Back to home</a>
           </main>
         </div>
-        <script src="../theme-toggle.js?v=#{THEME_ASSET_VERSION}"></script>
+        <script src="../js/theme-toggle.js?v=#{THEME_ASSET_VERSION}"></script>
       </body>
     </html>
   HTML
